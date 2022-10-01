@@ -1,10 +1,24 @@
+# Original author: Hugo Ledoux
+# Modified by Cynthia
 
 from flask import Flask, escape, url_for, render_template, request, Response
+from flask_sqlalchemy import SQLAlchemy,BaseQuery
 from cjio import cityjson
 import json
 import os
 
+from model import CjObjectModel, ImportMetaModel
+
+#-- create application instance
 app = Flask(__name__)
+
+#-- db configuration
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:password@localhost/leon_model'
+app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+app.secret_key = 'cynthia'
+
+#-- create db instance
+db = SQLAlchemy(app)
 
 jindex = json.loads(open('./datasets/index.json').read())
 PATHDATASETS = './datasets/'
@@ -35,7 +49,6 @@ def collections():
         return jindex
     else:
         return JINVALIDFORMAT
-
 
 
 @app.route('/collections/<dataset>/', methods=['GET']) #-- html/json
